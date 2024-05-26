@@ -18,8 +18,4 @@
     <ProjectReference Include="..\SocialMediaFeed.DataAccess\SocialMediaFeed.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
