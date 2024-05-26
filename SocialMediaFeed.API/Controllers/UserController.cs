@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SocialMediaFeed.API.Dtos;
 using SocialMediaFeed.DataAccess.Data;
 using SocialMediaFeed.Domain.Models;
 
@@ -11,19 +13,22 @@ namespace SocialMediaFeed.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser([FromBody] User user)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto user)
         {
-            _context.Users.Add(user);
+            var userToDb = _mapper.Map<User>(user);
+            _context.Users.Add(userToDb);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+            var dtoUser = _mapper.Map<UserDto>(userToDb);
+            return CreatedAtAction(nameof(GetUserById), new { id = userToDb.Id }, dtoUser);
         }
 
         [HttpGet]
