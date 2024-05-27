@@ -15,7 +15,7 @@ namespace SocialMediaFeed.Domain.Models
         [StringLength(140)]
         public string? Text { get; set; }
 
-        public DateTime CreatedAt { get; set; } //= DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public int Likes { get; set; }
 

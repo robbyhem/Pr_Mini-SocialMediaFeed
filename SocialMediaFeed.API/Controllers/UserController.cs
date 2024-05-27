@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SocialMediaFeed.API.Dtos;
 using SocialMediaFeed.DataAccess.Data;
+using SocialMediaFeed.Domain.Interface;
 using SocialMediaFeed.Domain.Models;
 
 namespace SocialMediaFeed.API.Controllers
@@ -12,49 +13,51 @@ namespace SocialMediaFeed.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UserController(ApplicationDbContext context, IMapper mapper)
+        public UserController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto user)
+        public ActionResult<CreateUserDto> CreateUser([FromBody] CreateUserDto user)
         {
             var userToDb = _mapper.Map<User>(user);
-            _context.Users.Add(userToDb);
-            await _context.SaveChangesAsync();
+            _unitOfWork.User.Add(userToDb);
+            _unitOfWork.Save();
             var dtoUser = _mapper.Map<UserDto>(userToDb);
             return CreatedAtAction(nameof(GetUserById), new { id = userToDb.Id }, dtoUser);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        public ActionResult<IEnumerable<UserDto>> GetAllUsers()
         {
-            var users = await _context.Users.ToListAsync();
-            return Ok(users);
+            var user = _unitOfWork.User.GetAll();
+            var userDto = _mapper.Map<IEnumerable<UserDto>>(user);
+            return Ok(userDto);
 
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUserById(int id)
+        public ActionResult<UserDto> GetUserById(int id)
         {
             if (id == 0)
             {
                 return BadRequest();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = _unitOfWork.User.Get(x => x.Id == id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            var userDto = _mapper.Map<UserDto>(user);
+            return Ok(userDto);
         }
     }
 }

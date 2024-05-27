@@ -25,11 +25,21 @@ namespace SocialMediaFeed.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CreateFollowDto>> FollowUser([FromBody] CreateFollowDto follow)
+        public ActionResult<CreateFollowDto> FollowUser([FromBody] CreateFollowDto follow)
         {
-            if (follow.Follower == follow.Followee)
+            if (follow.FollowerId == follow.FolloweeId)
             {
                 return BadRequest("User cannot follow themselves.");
+            }
+
+            if (follow.FollowerId == null || follow.FolloweeId == null)
+            {
+                return NotFound("The input you have entered does not exist");
+            }
+
+            if (follow.FollowerId == 0 || follow.FolloweeId == 0)
+            {
+                return BadRequest("You have entered a wrong input");
             }
 
             var existingFollow = _mapper.Map<Follow>(follow);

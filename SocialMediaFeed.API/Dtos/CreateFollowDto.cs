@@ -5,8 +5,8 @@ namespace SocialMediaFeed.API.Dtos
 {
     public class CreateFollowDto
     {
-        public string? Follower { get; set; }
+        public int FollowerId { get; set; }
 
-        public string? Followee { get; set; }
+        public int FolloweeId { get; set; }
     }
 }

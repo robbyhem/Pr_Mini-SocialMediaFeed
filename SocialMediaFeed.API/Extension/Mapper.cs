@@ -9,14 +9,14 @@ namespace SocialMediaFeed.API.Extension
         public Mapper()
         {
             CreateMap<Post, PostDto>()
-                .ForMember(d => d.User, o => o.MapFrom(s => s.User.UserName));
-            CreateMap<Post, CreatePostDto>().ReverseMap();
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+            CreateMap<CreatePostDto, Post>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<User, CreateUserDto>().ReverseMap();
-            CreateMap<Follow, FollowDto>().ReverseMap()
-                .ForMember(d => d.FollowerId, o => o.MapFrom(s => s.Follower))
-                .ForMember(d => d.FolloweeId, o => o.MapFrom(s => s.Followee));
-            CreateMap<Follow, CreateFollowDto>().ReverseMap();
+            CreateMap<CreateUserDto, User>().ReverseMap();
+            CreateMap<Follow, FollowDto>()
+                .ForMember(dest => dest.FollowerUserName, opt => opt.MapFrom(src => src.Follower.UserName))
+                .ForMember(dest => dest.FolloweeUserName, opt => opt.MapFrom(src => src.Followee.UserName));
+            CreateMap<CreateFollowDto, Follow>().ReverseMap();
         }
     }
 }
